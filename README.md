@@ -8,17 +8,20 @@ Store your books
 - Docker compose
 
 ## How to run?
-First create the database and data examples:
-
-``
-./vendor/bin/sail artisan load_initial_data
-``
 
 To start the Laravel Application run the following command:
 
 ``
 ./vendor/bin/sail up -d
 ``
+
+
+First create the database and data examples:
+
+``
+./vendor/bin/sail artisan load_initial_data
+``
+
 
 Then go to http://localhost to see the Books catalog application.
 
