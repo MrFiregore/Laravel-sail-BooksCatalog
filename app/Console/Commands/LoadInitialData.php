@@ -63,7 +63,7 @@
              */
             if(!Schema::hasTable('book') || $this->option('force')){
                 $this->call('migrate:fresh', ['--force']);
-                $this->call(' storage:link');
+                $this->call('storage:link');
             }
 
             foreach (self::GENRES as $genre) {
