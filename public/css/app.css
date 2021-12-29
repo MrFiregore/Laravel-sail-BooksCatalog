@@ -5,7 +5,7 @@ body {
 }
 
 .container {
-    width: 100%;
+    max-width: 100%;
     padding: 0 2.5%;
 }
 
@@ -115,8 +115,11 @@ body {
     display: flex;
     width: 100%;
     overflow-x: scroll;
-    mask-image: linear-gradient(to left, rgba(255, 255, 255, 0) 1%, rgba(255, 255, 255, 0.5) 3%, rgb(255, 255, 255) 5%);
-    -webkit-mask-image: linear-gradient(to left, rgba(255, 255, 255, 0) 1%, rgba(255, 255, 255, 0.5) 3%, rgb(255, 255, 255) 5%);
+    mask-image: linear-gradient(to left, rgba(255, 255, 255, 0) 1%, rgba(255, 255, 255, 0.5) 6%, rgb(255, 255, 255) 11%);
+    -webkit-mask-image: linear-gradient(to left, rgba(255, 255, 255, 0) 1%, rgba(255, 255, 255, 0.5) 6%, rgb(255, 255, 255) 11%);
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none; /* Firefox */
+
 }
 
 #category-container::after {
@@ -135,16 +138,6 @@ body {
 
 #category-container::-webkit-scrollbar {
     display: none;
-}
-
-/* Hide scrollbar for IE, Edge and Firefox */
-#category-container {
-    -ms-overflow-style: none; /* IE and Edge */
-    scrollbar-width: none; /* Firefox */
-}
-
-#image-nav {
-
 }
 
 .category-item {
