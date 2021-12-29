@@ -300,7 +300,7 @@ hr {
     height: 275px;
     width: 32%;
     background-color: #FFF;
-    box-shadow: 2px 2px 1px 1px rgb(0 0 0 / 2%);
+    box-shadow: 1px 1px 1px 1px rgb(0 0 0 / 10%);
     border-radius: 8px;
     font-weight: 600;
     margin-top: 50px;
