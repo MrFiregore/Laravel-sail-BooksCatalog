@@ -102,9 +102,7 @@ body {
     color: grey;
 }
 
-.content {
-    padding: 16px;
-}
+
 
 /**
  * Category container
@@ -476,8 +474,9 @@ hr {
 }
 
 .content {
-    width: 100%;
-    height: 420px;
+    max-width: 100%;
+    height: auto;
+    padding: 16px;
 }
 
 form {
@@ -556,7 +555,7 @@ form :is(input,textarea, .vsb-main).warn{
     }
 
     .content {
-        width: 100%;
+        max-width: 100%;
         height: auto;
     }
 

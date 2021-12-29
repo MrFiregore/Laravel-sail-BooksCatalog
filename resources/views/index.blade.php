@@ -61,10 +61,6 @@
 
 </div>
 
-<div class="content">
-    <div class="container">
-    </div>
-</div>
 @include('modal')
 <script type="application/javascript">
     const DEFAULT_GENRE = {
