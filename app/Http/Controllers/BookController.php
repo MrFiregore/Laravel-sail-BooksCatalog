@@ -61,7 +61,7 @@
              * @var \Illuminate\Http\UploadedFile $photo
              */
             $photo     = $validator["photo"];
-            $photo_url = \Storage::disk("public_images")->url($photo->store('books', ['disk' => 'public_images']));
+            $photo_url = \Storage::disk("public_images")->url($photo->store('book', ['disk' => 'public_images']));
             $book = new Book();
             $book->name = $validator['name'];
             $book->edition = $validator['edition'];
@@ -109,7 +109,7 @@
                  * @var \Illuminate\Http\UploadedFile $photo
                  */
                 $photo     = $validator["photo"];
-                $photo_url = \Storage::disk("public_images")->url($photo->store('books', ['disk' => 'public_images']));
+                $photo_url = \Storage::disk("public_images")->url($photo->store('book', ['disk' => 'public_images']));
                 $book->photo = $photo_url;
             }
 

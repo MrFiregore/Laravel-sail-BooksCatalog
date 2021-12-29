@@ -67,16 +67,23 @@ body {
 
 
 
-.category {
-    display: flex;
+.sub-header {
+    display: block;
     justify-content: space-between;
     align-items: center;
+    margin-bottom: 32px;
 }
 
+.sub-header label {
+    font-weight: bold;
+}
+.sub-header .add-element{
+    float: right;
+}
 
-/**
-    avatar section
- */
+    /**
+        avatar section
+     */
 .avatar {
     display: flex;
     justify-content: center;
@@ -114,6 +121,8 @@ body {
     display: flex;
     width: 100%;
     overflow-x: scroll;
+    mask-image: linear-gradient(to left, rgba(255, 255, 255, 0) 1%, rgba(255, 255, 255, 0.5) 3%, rgb(255, 255, 255) 5%);
+    -webkit-mask-image: linear-gradient(to left, rgba(255, 255, 255, 0) 1%, rgba(255, 255, 255, 0.5) 3%, rgb(255, 255, 255) 5%);
 }
 
 #category-container::after {
@@ -123,12 +132,14 @@ body {
     display: flex;
     width: 102px;
     height: calc(100% - 0px);
-    right: 0;
     position: absolute;
     z-index: 999;
     margin-left: auto;
     top: 0;
-    background: linear-gradient(to right, rgba(255, 255, 255, 0.1) 0, rgba(255, 255, 255, 0.5) 25%, rgba(255, 255, 255, 0.65) 95%);
+    right: 0;
+    /*background: linear-gradient(to right, rgba(255, 0, 0, 0.1) 0, rgba(250, 0, 0, 0.5) 25%, rgba(255, 1, 1, 0.65) 95%);*/
+
+    /*background: linear-gradient(to right, rgba(255, 255, 255, 0.1) 0, rgba(255, 255, 255, 0.5) 25%, rgba(255, 255, 255, 0.65) 95%);*/
 }
 
 #category-container::-webkit-scrollbar {
@@ -154,6 +165,7 @@ body {
     min-width: 7.3vw;
     min-height: 7.3vw;
     position: relative;
+    display: table;
 }
 
 
@@ -164,12 +176,12 @@ body {
     transition-timing-function: cubic-bezier(0.55, 0.06, 0.68, 0.19);
     transition-delay: 0s;
 }
-.category-item > div {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
+.category-item > a {
+    text-decoration: none;
+    display: table-cell;
+    vertical-align: middle;
 }
+
 .category-item img{
     width: 4vmax;
     height: auto;
@@ -269,7 +281,7 @@ hr {
     color: red;
 }
 
-#book-container {
+.card-container {
     display: flex;
     align-items: center;
     flex-wrap: wrap;
@@ -286,13 +298,18 @@ hr {
 .card {
     position: relative;
     height: 275px;
-    width: 468px;
+    width: 32%;
     background-color: #FFF;
     box-shadow: 2px 2px 1px 1px rgb(0 0 0 / 2%);
     border-radius: 8px;
     font-weight: 600;
     margin-top: 50px;
 }
+.card:nth-child(3n+2){
+    margin-left: 2%;
+    margin-right: 2%;
+}
+
 
 /* Image on the left side */
 .thumbnail {
@@ -304,6 +321,7 @@ hr {
     width: 210px;
     overflow: hidden;
     border-radius: 8px;
+
 }
 
 img.left {
@@ -435,7 +453,7 @@ hr {
     top: 0;
     left: 0;
     overflow: hidden;
-    animation-name: fadeIn_Container;
+    animation-name: fadein;
     animation-duration: 1s;
     transition: visibility 0s, opacity 1s linear;
 
@@ -458,7 +476,7 @@ hr {
     margin-top: 30px;
     margin-left: 10%;
 
-    animation-name: fadeIn_Modal;
+    animation-name: fadein;
     animation-duration: 0.8s;
 
     transition: visibility 00s, opacity 0.8s linear;
@@ -487,7 +505,12 @@ hr {
 }
 
 form {
+    display: none;
     margin-top: 20px;
+}
+
+form.active {
+    display: block;
 }
 
 form label {
@@ -592,7 +615,7 @@ form :is(input,textarea, .vsb-main).warn{
 
 /****ANIMATIONS****/
 
-@keyframes fadeIn_Modal {
+@keyframes fadein {
     from {
         opacity: 0;
     }
@@ -601,13 +624,11 @@ form :is(input,textarea, .vsb-main).warn{
     }
 }
 
-@keyframes fadeIn_Container {
-    from {
-        opacity: 0;
-    }
-    to {
-        opacity: 0.9;
-    }
+
+.sub-container {
+    display: none;
 }
 
-
+.sub-container.active {
+    display: block;
+}

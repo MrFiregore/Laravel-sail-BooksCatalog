@@ -6,22 +6,36 @@
     const UI = {
         genreFromSelector: null,
         authorFromSelector: null,
-        form: document.querySelector("form"),
-        listenOnClick,
-        createGenre,
-        createBook,
-        removeClass,
-        addClass,
         genresForm: document.querySelector("select[name=genres]"),
         authorsForm: document.querySelector("select[name=authors]"),
+        bookCardContainer: document.querySelector('.sub-container[data-target="book"] .card-container'),
+        genreCardContainer: document.querySelector('.sub-container[data-target="genre"] .card-container'),
+        authorCardContainer: document.querySelector('.sub-container[data-target="author"] .card-container'),
+        listenOnClick,
+        createGenre,
+        createGenreMenu,
+        createBook,
+        createAuthor,
+        removeClass,
+        addClass,
         removeAllChilds,
         addGenreForm,
-        addOptionToSelect,
         addAuthorForm,
-        resetForm,
-        getBookFormData
+        addOptionToSelect,
+        resetForms,
+        getFormData
     };
 
+
+    if (typeof Element.prototype.clearChildren === 'undefined') {
+        Object.defineProperty(Element.prototype, 'clearChildren', {
+            configurable: true,
+            enumerable: false,
+            value: function () {
+                while (this.firstChild) this.removeChild(this.lastChild);
+            }
+        });
+    }
 
     function createElementFromHTML(htmlString) {
         var div = document.createElement('div');
@@ -33,9 +47,8 @@
 
 
     function removeAllChilds(selector) {
-        var node = isElement(selector) ? selector : document.querySelector(selector),
-            cNode = node.cloneNode(false);
-        node.parentNode.replaceChild(cNode, node);
+        var node = isElement(selector) ? selector : document.querySelector(selector);
+        node.clearChildren();
     }
 
     function isNode(o) {
@@ -88,8 +101,11 @@
         addOptionToSelect(UI.authorsForm, author.name, author.id);
     }
 
-    function listenOnClick(base, target, callback, childs) {
-        document.querySelector(base).addEventListener('click', function (event) {
+    function listenOnClick(base, target, callback, childs, _event) {
+        base = isElement(base) ? base : document.querySelector(base);
+        childs = childs || false;
+        _event = _event || 'click';
+        base.addEventListener(_event, function (event) {
             if ((target && event.target.matches(target)) || (childs && event.target.closest(target) !== null)){
                 event.preventDefault();
                 callback(event);
@@ -98,7 +114,7 @@
         }, false);
     }
 
-    function createGenre(data, active) {
+    function createGenreMenu(data, active) {
         active = active || false;
         return createElementFromHTML(`
         <div class="category-item ${active ? 'active' : ''}" data-id="${data.id}">
@@ -110,20 +126,24 @@
         `);
     }
 
-    function createBook(data) {
-        let genres = data.genres.map(
-            function (e) {
-                return e.name;
-            }
-        ).join();
-        let authors = data.authors.map(
-            function (e) {
-                return e.name;
-            }
-        ).join();
+    function createCardElement(data, _type) {
+        _type = _type || 'book';
+        _isBook = _type === 'book';
+        if (_isBook){
+            var genres = data.genres.map(
+                function (e) {
+                    return e.name;
+                }
+            ).join();
+            var authors = data.authors.map(
+                function (e) {
+                    return e.name;
+                }
+            ).join();
+        }
 
         return createElementFromHTML(`
-            <div class="card" data-id="${data.id}">
+            <div class="card" data-id="${data.id}" data-type="${_type}">
                 <div class="thumbnail">
                     <img class="left" src="${data.photo}"/>
                 </div>
@@ -135,14 +155,38 @@
                         <button class="drop-btn delete">Delete</button>
                     </div>
                     <h5>${data.name}</h5>
-                    <p class="author">${authors}</p>
-                    <p class="description text-grey">${data.description}</p>
-                    <p class="text-grey genres">${genres}</p>
-
+                    `
+                        +
+                            (
+                                _isBook ? `<p class="author">${authors}</p>` : ''
+                            )
+                        +
+                            (
+                                _isBook ? `<p class="description text-grey">${data.description}</p>` : ''
+                            )
+                        +
+                            (
+                                _isBook ? `<p class="text-grey genres">${genres}</p>` : ''
+                            )
+                        +
+                    `
                 </div>
             </div>
         `);
     }
+
+    function createBook(data) {
+        return createCardElement(data, 'book');
+    }
+
+    function createAuthor(data) {
+        return createCardElement(data, 'author');
+    }
+
+    function createGenre(data) {
+        return createCardElement(data, 'genre');
+    }
+
 
 
     function getSelectValues(select) {
@@ -160,26 +204,33 @@
         return result;
     }
 
-    function getBookFormData() {
-        let formData = new FormData(UI.form)
+    function getFormData(form) {
+        let formData = new FormData(form),
+            _type = form.dataset.target;
 
         // Create an object to hold the name/value pairs
-        return {
-            name: formData.get("name"),
-            description: formData.get("description"),
-            edition: formData.get("edition"),
-            photo: formData.get("photo"),
-            genres: getSelectValues(UI.genresForm),
-            authors: getSelectValues(UI.authorsForm)
-        };
+        return _type === 'book' ?
+            {
+                name: formData.get("name"),
+                description: formData.get("description"),
+                edition: formData.get("edition"),
+                photo: formData.get("photo"),
+                genres: getSelectValues(UI.genresForm),
+                authors: getSelectValues(UI.authorsForm)
+            }
+                :
+            {
+                name: formData.get("name"),
+                photo: formData.get("photo"),
+            };
 
     }
 
-    function resetForm(){
-        UI.form.reset();
+    function resetForms(){
+        [].forEach.call(document.querySelectorAll("form"), function (form) {
+            form.reset();
+        });
         UI.removeClass("form :is(input,textarea, .vsb-main)", "warn")
-
-        // document.querySelector("[name='photo']").value = ""
         UI.genreFromSelector.empty();
         UI.authorFromSelector.empty();
     }

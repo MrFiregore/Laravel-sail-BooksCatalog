@@ -34,13 +34,17 @@ Route::group(
             Route::get('', [AuthorController::class, "all"]);
             Route::post('', [AuthorController::class, "create"]);
             Route::get('/{author}', [AuthorController::class, "single"]);
+            Route::post('/{author}', [AuthorController::class, "update"]);
+            Route::delete('/{author}', [AuthorController::class, "delete"]);
 
         });
 
         Route::prefix('genre')->group(function () {
             Route::get('', [GenreController::class, "all"]);
+            Route::post('', [GenreController::class, "create"]);
             Route::get('/{genre}', [GenreController::class, "single"]);
-
+            Route::post('/{genre}', [GenreController::class, "update"]);
+            Route::delete('/{genre}', [GenreController::class, "delete"]);
         });
 
     }

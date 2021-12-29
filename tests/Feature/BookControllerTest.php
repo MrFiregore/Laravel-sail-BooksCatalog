@@ -76,7 +76,7 @@
              * @var TestResponse $response
              */
             $response = $this->post('/api/book', self::$book_data);
-            Storage::disk('public_images')->assertExists("/books/" . self::$file->hashName());
+            Storage::disk('public_images')->assertExists("/book/" . self::$file->hashName());
 
             $json          = $response->json();
             self::$book_id = $json["response_data"]["book"]["id"];
@@ -87,7 +87,7 @@
             $response->assertJsonPath('response_data.book.name', 'Libro de prueba');
             $response->assertJsonPath('response_data.book.edition', 'Edición de prueba');
             $response->assertJsonPath('response_data.book.description', 'Descripción de prueba');
-            $response->assertJsonPath('response_data.book.photo', 'http://localhost/storage/imgs/books/' . self::$file->hashName());
+            $response->assertJsonPath('response_data.book.photo', 'http://localhost/storage/imgs/book/' . self::$file->hashName());
 
             $response->assertJsonPath('response_data.book.genres.0.id', 1);
             $response->assertJsonPath('response_data.book.genres.0.name', 'Misterio');
@@ -160,8 +160,8 @@
             ];
 
             $response = $this->post('/api/book/' . self::$book_id, $data);
-            Storage::disk('public_images')->assertExists("/books/" . $file->hashName());
-            $response->assertJsonPath('response_data.book.photo', 'http://localhost/storage/imgs/books/' . $file->hashName());
+            Storage::disk('public_images')->assertExists("/book/" . $file->hashName());
+            $response->assertJsonPath('response_data.book.photo', 'http://localhost/storage/imgs/book/' . $file->hashName());
             $response->assertStatus(200);
         }
 
@@ -228,7 +228,6 @@
         public function test_delete_book()
         {
             $response           = $this->delete('/api/book/' . self::$book_id);
-            $json = $response->json();
             $response_structure = [
                 'result' => [
                     'status',
@@ -240,6 +239,26 @@
             $response->assertJsonPath('result.status', 'OK');
             $response->assertJsonPath('result.code', 0);
             $response->assertJsonPath('result.msg', 'Book \'Nombre actualizado\' (' . self::$book_id . ') removed');
+            $response->assertStatus(200);
+        }
+
+        /**
+         * @depends test_delete_book
+         */
+        public function test_delete_book_invalid()
+        {
+            $response           = $this->delete('/api/book/' . self::$book_id);
+            $response_structure = [
+                'result' => [
+                    'status',
+                    'code',
+                    'msg',
+                ],
+            ];
+            $response->assertJsonStructure($response_structure);
+            $response->assertJsonPath('result.status', 'ERROR');
+            $response->assertJsonPath('result.code', -14);
+            $response->assertJsonPath('result.msg', 'Ids not found (' . self::$book_id . ')');
             $response->assertStatus(200);
         }
 

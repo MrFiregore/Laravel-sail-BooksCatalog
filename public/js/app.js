@@ -51,25 +51,73 @@
         };
     }();
 
+
+
     requireFiles(["/js/modal.js", "/js/api.js", "/js/ui.js", "/js/vanillaSelectBox.js"], function () {
+        var modal = new Modal(document.querySelector(".modal"));
 
         window.active_actions = {
             editing_form: false,
             editing_book: false,
-            fetching_book: false
+            fetching_book: false,
+            actual_type: 'book'
 
         };
 
-        MODAL.onClose = function () {
+        modal.onClose = function () {
             active_actions.editing_form = false;
             active_actions.editing_book = false;
         };
 
 
-        MODAL.onOpen = function () {
+        modal.onOpen = function () {
             active_actions.editing_form = true;
         };
+        /**
+         * three dots listener
+         */
+        UI.listenOnClick('body', '.dots', function (event) {
+            event.target.parentElement.querySelector(".edit-dropdown").classList.toggle("show");
+        });
 
+        /**
+         * Edit book
+         */
+        UI.listenOnClick('body', '.drop-btn.edit', editElement);
+
+        /**
+         * Remove book
+         */
+        UI.listenOnClick('body', '.drop-btn.delete', removeElement);
+
+
+        UI.listenOnClick("body", ".menuItems a", function (event) {
+            let target = event.target;
+
+            active_actions.actual_type = target.dataset.type;
+
+            UI.removeClass('.category-item.active', 'active');
+            UI.addClass(target, 'active');
+
+            /**
+             * Change bold titles in menus
+             */
+            UI.removeClass('.menuItems a', 'active');
+            UI.addClass(document.querySelector(`.menuItems a[data-type="${active_actions.actual_type}"]`), 'active');
+
+            /**
+             * Change visibility to sub-containers
+             */
+            UI.removeClass('.sub-container.active', 'active');
+            UI.addClass(document.querySelector(`.sub-container[data-target="${active_actions.actual_type}"]`), 'active');
+
+            /**
+             * Change form type
+             */
+
+            UI.removeClass('form.active', 'active');
+            UI.addClass(document.querySelector(`form[data-target="${active_actions.actual_type}"]`), 'active');
+        });
 
         /**
          * Genre selector listener
@@ -82,42 +130,84 @@
             updateBooks(target.dataset.id);
         },true);
 
-        UI.listenOnClick("body","#addBook",function (event){
-            UI.form.dataset.bookId = '*';
-            MODAL.openModal();
+        UI.listenOnClick("body",".add-element",function (event){
+
+            /**
+             * @type {string}
+             */
+            let _form = document.querySelector(`form[data-target="${active_actions.actual_type}"]`);
+            _form.dataset.id = '*';
+            modal.openModal();
         });
+
         UI.listenOnClick(".modal", '.btn.btn-success', submitForm);
+        UI.listenOnClick(".modal", '.btn.btn-success', submitForm);
+        UI.listenOnClick(".modal", 'form', function (event){
+            event.preventDefault();
+            submitForm();
+        },false,'submit');
 
-        API.get('/api/author', {all: false}).then(function (resp) {
-            let authors = resp.response_data.authors;
 
-            [].forEach.call(authors, function (author) {
-                UI.addAuthorForm(author);
-            })
-            UI.authorFromSelector = new vanillaSelectBox("[name=authors]");
-        }).catch(console.warn)
+        window.updateAuthors =function updateAuthors(){
+            API.get('/api/author', {all: false}).then(function (resp) {
+                UI.removeAllChilds(UI.authorCardContainer);
+
+                if (UI.authorFromSelector instanceof vanillaSelectBox){
+                    UI.authorFromSelector.destroy();
+                    UI.authorFromSelector = null;
+                }
+
+                let authors = resp.response_data.authors;
+
+                [].forEach.call(authors, function (author) {
+                    UI.addAuthorForm(author);
+                    UI.authorCardContainer.appendChild(UI.createAuthor(author))
+                })
+
+                if (typeof UI.authorFromSelector == "undefined" || UI.authorFromSelector === null){
+                    UI.authorFromSelector = new vanillaSelectBox("[name=authors]");
+                }
+            }).catch(console.warn)
+        }
 
 
 
 
         window.updateGenres = function updateGenres(){
+            UI.removeAllChilds("#category-container");
+            UI.removeAllChilds(UI.genreCardContainer);
+
             API.get('/api/genre', {all: false}).then(function (resp){
+                UI.removeAllChilds(UI.genreCardContainer);
+
+                if (UI.genreFromSelector instanceof vanillaSelectBox) {
+                    UI.genreFromSelector.destroy();
+                    UI.genreFromSelector = null;
+                }
+
                 let genres = resp.response_data.genres;
                 genres.unshift(DEFAULT_GENRE);
 
                 [].forEach.call(genres, function (genre){
                     let isAll = genre.id === '*';
-                    document.querySelector("#category-container").appendChild(UI.createGenre(genre, isAll));
+                    document.querySelector("#category-container").appendChild(UI.createGenreMenu(genre, isAll));
                     if (!isAll){
                         UI.addGenreForm(genre);
+                        UI.genreCardContainer.appendChild(UI.createGenre(genre))
                     }
+
                 });
-                UI.genreFromSelector = new vanillaSelectBox("[name=genres]");
+
+                if (typeof UI.genreFromSelector == "undefined" || UI.genreFromSelector === null) {
+                    UI.genreFromSelector = new vanillaSelectBox("[name=genres]");
+                }
+
+
             }).catch(console.warn)
             updateBooks('*');
         }
 
-        function updateBooks(genre){
+        window.updateBooks = function updateBooks(genre){
             genre = genre || '*';
             let data = {};//{all: false, genres: [1, 3]}
 
@@ -126,73 +216,73 @@
             }
 
             API.get('/api/book', data).then(function (resp){
-                UI.removeAllChilds("#book-container");
+                UI.removeAllChilds(UI.bookCardContainer);
                 let books = resp.response_data.books;
 
                 [].forEach.call(books, function (book) {
-                    document.querySelector("#book-container").appendChild(UI.createBook(book))
-                });
-
-                /**
-                 * three dots listener
-                 */
-                UI.listenOnClick("#book-container", '.dots', function (event) {
-                    event.target.parentElement.querySelector(".edit-dropdown").classList.toggle("show");
+                    UI.bookCardContainer.appendChild(UI.createBook(book))
                 });
 
 
 
-                /**
-                 * Edit book
-                 */
-                UI.listenOnClick("#book-container", '.drop-btn.edit', editBook);
 
 
-                /**
-                 * Remove book
-                 */
-                UI.listenOnClick("#book-container", '.drop-btn.delete', removeBook);
             }).catch(console.warn)
         }
 
-        function editBook(event) {
-            let id = event.target.closest(".card").dataset.id;
-            if (active_actions.fetching_book){
+        function editElement(event) {
+            let id = event.target.closest(".card").dataset.id,
+                _type = event.target.closest(".card").dataset.type,
+                _fetching_type = "fetching_"+_type;
+
+            if (active_actions[_fetching_type]){
                 return;
             }
-            active_actions.fetching_book = true;
+            active_actions[_fetching_type] = true;
 
-            API.get(`/api/book/${id}`, {all:true}).then(function (resp) {
-                active_actions.fetching_book = false;
-                let data = resp.response_data.book;
+            API.get(`/api/${_type}/${id}`, {all:true}).then(function (resp) {
+                let data = resp.response_data[_type];
 
-                let genres = data.genres.map(
-                    function (e) {
-                        return e.id.toString();
-                    }
-                );
-                let authors = data.authors.map(
-                    function (e) {
-                        return e.id.toString();
-                    }
-                );
-                UI.form.dataset.bookId = data.id;
-                UI.form.querySelector("[name='name']").value = data.name;
-                UI.form.querySelector("[name='description']").value = data.description;
-                UI.form.querySelector("[name='edition']").value = data.edition;
-                UI.genreFromSelector.setValue(genres);
-                UI.authorFromSelector.setValue(authors);
-                MODAL.openModal();
+                var _form =  document.querySelector(`form[data-target="${active_actions.actual_type}"]`);
+                _form.dataset.id = data.id;
+                _form.querySelector("[name='name']").value = data.name;
+
+                if (data.hasOwnProperty("genres")){
+                    let genres = data.genres.map(
+                        function (e) {
+                            return e.id.toString();
+                        }
+                    );
+                    UI.genreFromSelector.setValue(genres);
+                }
+                if (data.hasOwnProperty("authors")) {
+                    let authors = data.authors.map(
+                        function (e) {
+                            return e.id.toString();
+                        }
+                    );
+                    UI.authorFromSelector.setValue(authors);
+                }
+                if (data.hasOwnProperty("description")) {
+                    _form.querySelector("[name='description']").value = data.description;
+                }
+                if (data.hasOwnProperty("edition")) {
+                    _form.querySelector("[name='edition']").value = data.edition;
+                }
+                modal.openModal();
+            }).finally(function (){
+                active_actions[_fetching_type] = false;
             });
         }
 
         function submitForm(){
-            let book_id = UI.form.dataset.bookId,
-                url = '/api/book' + (book_id !== '*' ? `/${book_id}` : ''),
-                book_data = UI.getBookFormData(),
+            let _form = document.querySelector(`form[data-target="${active_actions.actual_type}"]`),
+                book_id = _form.dataset.id,
+                url = '/api/' + active_actions.actual_type + (book_id !== '*' ? `/${book_id}` : ''),
+                data = UI.getFormData(document.querySelector(`form[data-target="${active_actions.actual_type}"]`)),
                 emptyValues = [];
 
-            Object.entries(book_data)
+            Object.entries(data)
                 .filter(([, value]) => (!Array.isArray(value) && ["", null].indexOf(typeof value === 'string' ? value.trim() : value) !== -1) || (Array.isArray(value) && !value.length))
                 .forEach(([key, value]) => (emptyValues.push(key)));
 
@@ -200,7 +290,7 @@
 
             if (emptyValues.length){
                 emptyValues.forEach(function (elname){
-                    let domele = document.querySelector(`[name="${elname}"]`);
+                    let domele = document.querySelector(`form[data-target="${active_actions.actual_type}"] [name="${elname}"]`);
 
                     if (domele.nodeName === "SELECT"){
                         domele = document.getElementById(`btn-group-name=${elname}]`);
@@ -210,21 +300,31 @@
                 })
                 return;
             }
-            API.post(url, book_data).then(function (resp){
-                MODAL.closeModal();
-                updateBooks(document.querySelector(".category-item.active").dataset.id)
-
+            API.post(url, data).then(function (resp){
+                updateActualInfo();
+                modal.closeModal();
             }).catch(console.warn)
 
         }
 
-        function removeBook(event) {
+        function removeElement(event) {
             let id = event.target.closest(".card").dataset.id;
-            API.delete(`/api/book/${id}`).then(function (resp) {
+            API.delete(`/api/${active_actions.actual_type}/${id}`).then(function (resp) {
                 event.target.closest(".card").remove();
+                updateActualInfo();
             });
         }
+
+        function updateActualInfo(){
+            var fn = window["update" + (active_actions.actual_type.charAt(0).toUpperCase() + active_actions.actual_type.slice(1)) + 's'];
+
+            if (typeof fn === 'function') {
+                fn();
+            }
+        }
         updateGenres();
+        updateAuthors();
+
 
     })
 })();

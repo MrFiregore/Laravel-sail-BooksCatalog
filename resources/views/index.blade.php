@@ -12,9 +12,9 @@
                     <span>books</span>
                     <span>catalog</span>
                 </div>
-                <a class="active" href="#">Libros</a>
-                <a href="#">Categories</a>
-                <a href="#">Autores</a>
+                <a class="active" href="#" data-type="book">Libros</a>
+                <a href="#" data-type="genre">Categorias</a>
+                <a href="#" data-type="author">Autores</a>
             </div>
             <div class="avatar">
                 <img src="{{ asset('imgs/avatar.png') }}" alt="profile img">
@@ -27,16 +27,37 @@
 
 
 <div class="container">
-    <div class="category" style="margin-bottom: 32px; ">
-        <label style="font-weight: bold;">Por categoria</label>
-        <button class="btn btn-default" id="addBook">Añadir libro</button>
+
+    <div class="sub-container active" data-target="book">
+        <div class="sub-header" >
+            <label>Por categoria</label>
+            <button class="btn btn-default add-element">Añadir libro</button>
+        </div>
+
+        <!-- categories -->
+        <div id="category-container"></div>
+        <!-- books -->
+        <div class="card-container"></div>
     </div>
 
-    <div id="category-container"></div>
+    <div class="sub-container" data-target="author">
+        <div class="sub-header">
+            <label>Autores</label>
 
+            <button class="btn btn-default add-element">Añadir autor</button>
+        </div>
+        <div class="card-container"></div>
 
-    <!-- books -->
-    <div id="book-container"></div>
+    </div>
+
+    <div class="sub-container" data-target="genre">
+        <div class="sub-header">
+            <label>Categorias</label>
+            <button class="btn btn-default add-element">Añadir categoría</button>
+        </div>
+        <div class="card-container"></div>
+
+    </div>
 
 </div>
 
