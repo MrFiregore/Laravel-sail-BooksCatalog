@@ -13,7 +13,7 @@
                     <span>catalog</span>
                 </div>
                 <a class="active" href="#" data-type="book">Libros</a>
-                <a href="#" data-type="genre">Categorias</a>
+                <a href="#" data-type="genre">Categorías</a>
                 <a href="#" data-type="author">Autores</a>
             </div>
             <div class="avatar">
@@ -52,7 +52,7 @@
 
     <div class="sub-container" data-target="genre">
         <div class="sub-header">
-            <label>Categorias</label>
+            <label>Categorías</label>
             <button class="btn btn-default add-element">Añadir categoría</button>
         </div>
         <div class="card-container"></div>

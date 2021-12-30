@@ -340,8 +340,13 @@ img.left {
 
 .right .genres {
     font-weight: 600;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
+.right .genres:hover {
+    overflow: visible;
+}
 
 h5 {
     padding-top: 21px;
@@ -607,3 +612,21 @@ form :is(input,textarea, .vsb-main).warn{
 .sub-container.active {
     display: block;
 }
+
+/*.tooltip .tooltiptext {*/
+/*    visibility: hidden;*/
+/*    width: 120px;*/
+/*    background-color: black;*/
+/*    color: #fff;*/
+/*    text-align: center;*/
+/*    border-radius: 6px;*/
+/*    padding: 5px 0;*/
+
+/*    !* Position the tooltip *!*/
+/*    position: absolute;*/
+/*    z-index: 1;*/
+/*}*/
+
+/*.tooltip:hover .tooltiptext {*/
+/*    visibility: visible;*/
+/*}*/
