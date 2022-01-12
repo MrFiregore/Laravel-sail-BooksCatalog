@@ -28,8 +28,6 @@
             '-12' => ['msg' => 'Mandatory field @FIELD not found'],
             '-13' => ['msg' => 'The value is invalid. check it value and format'],
             '-14' => ['msg' => 'The given id not match with any element'],
-
-            '-21' => ['msg' => 'The given channel not found'],
         ],
 
 
